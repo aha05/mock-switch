@@ -1,0 +1,44 @@
+iso8583-mock-switch/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── yourcompany/
+│   │   │           └── mockswitch/
+│   │   │
+│   │   │               ├── MockSwitchApplication.java
+│   │   │
+│   │   │               ├── tcp/
+│   │   │               │   ├── TcpServer.java
+│   │   │               │   ├── TcpConnection.java
+│   │   │               │   └── ConnectionHandler.java
+│   │   │
+│   │   │               ├── iso8583/
+│   │   │               │   ├── Iso8583Message.java
+│   │   │               │   ├── Iso8583Parser.java
+│   │   │               │   ├── Iso8583Builder.java
+│   │   │               │   ├── Bitmap.java
+│   │   │               │   └── IsoField.java
+│   │   │
+│   │   │               ├── transaction/
+│   │   │               │   ├── TransactionRouter.java
+│   │   │               │   ├── PurchaseHandler.java
+│   │   │               │   └── ReversalHandler.java
+│   │   │
+│   │   │               ├── authorization/
+│   │   │               │   ├── AuthorizationService.java
+│   │   │               │   └── AuthorizationResult.java
+│   │   │
+│   │   │               └── terminal/
+│   │   │                   ├── Terminal.java
+│   │   │                   └── TerminalService.java
+│   │   │
+│   │   └── resources/
+│   │       └── application.yml
+│   │
+│   └── test/
+│
+├── pom.xml
+├── README.md
+└── .gitignore

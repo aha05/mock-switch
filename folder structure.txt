@@ -1,0 +1,163 @@
+iso8583-mock-switch/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── yourcompany/
+│   │   │           └── mockswitch/
+│   │   │
+│   │   │               ├── MockSwitchApplication.java
+│   │   │               │
+│   │   │               ├── iso8583/
+│   │   │               │   ├── tcp/
+│   │   │               │   │   ├── TcpServer.java
+│   │   │               │   │   ├── TcpConnection.java
+│   │   │               │   │   ├── ConnectionHandler.java
+│   │   │               │   │   └── ConnectionManager.java
+│   │   │               │   │
+│   │   │               │   ├── parser/
+│   │   │               │   │   ├── Iso8583Parser.java
+│   │   │               │   │   ├── MessageParser.java
+│   │   │               │   │   └── FieldParser.java
+│   │   │               │   │
+│   │   │               │   ├── builder/
+│   │   │               │   │   ├── Iso8583MessageBuilder.java
+│   │   │               │   │   └── FieldBuilder.java
+│   │   │               │   │
+│   │   │               │   ├── bitmap/
+│   │   │               │   │   ├── Bitmap.java
+│   │   │               │   │   └── BitmapHandler.java
+│   │   │               │   │
+│   │   │               │   ├── field/
+│   │   │               │   │   ├── IsoField.java
+│   │   │               │   │   ├── FieldDefinition.java
+│   │   │               │   │   └── FieldType.java
+│   │   │               │   │
+│   │   │               │   └── validation/
+│   │   │                   │       ├── IsoMessageValidator.java
+│   │   │                   │       └── FieldValidator.java
+│   │   │
+│   │   │               ├── network/
+│   │   │               │   ├── signon/
+│   │   │               │   │   ├── SignOnHandler.java
+│   │   │               │   │   └── SignOnService.java
+│   │   │               │   │
+│   │   │               │   ├── echo/
+│   │   │               │   │   ├── EchoHandler.java
+│   │   │               │   │   └── EchoService.java
+│   │   │               │   │
+│   │   │               │   └── signoff/
+│   │   │                   │       ├── SignOffHandler.java
+│   │   │                   │       └── SignOffService.java
+│   │   │
+│   │   │               ├── transaction/
+│   │   │               │   ├── purchase/
+│   │   │               │   │   ├── PurchaseHandler.java
+│   │   │               │   │   ├── PurchaseService.java
+│   │   │               │   │   ├── PurchaseRequest.java
+│   │   │               │   │   └── PurchaseResponse.java
+│   │   │               │   │
+│   │   │               │   ├── reversal/
+│   │   │               │   │   ├── ReversalHandler.java
+│   │   │               │   │   ├── ReversalService.java
+│   │   │               │   │   ├── ReversalRequest.java
+│   │   │               │   │   └── ReversalResponse.java
+│   │   │               │   │
+│   │   │               │   ├── refund/
+│   │   │               │   │   ├── RefundHandler.java
+│   │   │               │   │   ├── RefundService.java
+│   │   │               │   │   └── RefundResponse.java
+│   │   │               │   │
+│   │   │               │   ├── balance/
+│   │   │               │   │   ├── BalanceInquiryHandler.java
+│   │   │               │   │   └── BalanceInquiryService.java
+│   │   │               │   │
+│   │   │               │   └── TransactionRouter.java
+│   │   │
+│   │   │               ├── authorization/
+│   │   │               │   ├── MockAuthorizationService.java
+│   │   │               │   ├── AuthorizationResult.java
+│   │   │               │   ├── AuthorizationScenario.java
+│   │   │               │   └── AuthorizationConfiguration.java
+│   │   │
+│   │   │               ├── transactionstate/
+│   │   │               │   ├── TransactionState.java
+│   │   │               │   ├── TransactionStateService.java
+│   │   │               │   ├── StanGenerator.java
+│   │   │               │   ├── RrnGenerator.java
+│   │   │               │   └── ReversalHandler.java
+│   │   │
+│   │   │               ├── terminal/
+│   │   │               │   ├── Terminal.java
+│   │   │               │   ├── TerminalController.java
+│   │   │               │   ├── TerminalService.java
+│   │   │               │   ├── TerminalRepository.java
+│   │   │               │   ├── TerminalStatus.java
+│   │   │               │   ├── TerminalConnection.java
+│   │   │               │   └── TerminalConnectionService.java
+│   │   │
+│   │   │               ├── administration/
+│   │   │               │   ├── response/
+│   │   │               │   │   ├── ResponseConfiguration.java
+│   │   │               │   │   ├── ResponseConfigurationController.java
+│   │   │               │   │   └── ResponseConfigurationService.java
+│   │   │               │   │
+│   │   │               │   ├── transaction/
+│   │   │               │   │   ├── TransactionQueryController.java
+│   │   │               │   │   └── TransactionQueryService.java
+│   │   │               │   │
+│   │   │               │   └── connection/
+│   │   │                   │       ├── ConnectionController.java
+│   │   │                   │       └── ConnectionQueryService.java
+│   │   │
+│   │   │               ├── observability/
+│   │   │               │   ├── audit/
+│   │   │               │   │   ├── AuditLog.java
+│   │   │               │   │   ├── AuditService.java
+│   │   │               │   │   └── AuditRepository.java
+│   │   │               │   │
+│   │   │               │   ├── metrics/
+│   │   │               │   │   └── SwitchMetrics.java
+│   │   │               │   │
+│   │   │               │   └── logging/
+│   │   │                   │       └── LoggingConfiguration.java
+│   │   │
+│   │   │               └── common/
+│   │   │                   ├── exception/
+│   │   │                   │   ├── MockSwitchException.java
+│   │   │                   │   ├── Iso8583Exception.java
+│   │   │                   │   └── GlobalExceptionHandler.java
+│   │   │                   │
+│   │   │                   ├── config/
+│   │   │                   │   ├── TcpConfiguration.java
+│   │   │                   │   └── SwitchConfiguration.java
+│   │   │                   │
+│   │   │                   ├── enums/
+│   │   │                   └── util/
+│   │   │
+│   │   └── resources/
+│   │       ├── application.yml
+│   │       ├── db/
+│   │       │   └── migration/
+│   │       │       ├── V1__create_terminal.sql
+│   │       │       ├── V2__create_transaction.sql
+│   │       │       ├── V3__create_audit_log.sql
+│   │       │       └── V4__create_response_configuration.sql
+│   │       └── logback-spring.xml
+│   │
+│   └── test/
+│       └── java/
+│           └── com/
+│               └── yourcompany/
+│                   └── mockswitch/
+│                       ├── iso8583/
+│                       ├── network/
+│                       ├── transaction/
+│                       ├── authorization/
+│                       ├── terminal/
+│                       └── administration/
+│
+├── pom.xml
+├── README.md
+└── .gitignore

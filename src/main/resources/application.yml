@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: mock-switch
+
+mock-switch:
+  tcp:
+    port: 8583
