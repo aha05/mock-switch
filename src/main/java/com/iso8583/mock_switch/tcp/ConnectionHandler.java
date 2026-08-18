@@ -1,12 +1,30 @@
 package com.iso8583.mock_switch.tcp;
 
+import com.iso8583.mock_switch.iso8583.Iso8583Builder;
+import com.iso8583.mock_switch.iso8583.Iso8583Message;
+import com.iso8583.mock_switch.iso8583.Iso8583Parser;
+import com.iso8583.mock_switch.transaction.TransactionRouter;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class ConnectionHandler {
+    private final Iso8583Parser iso8583Parser;
+    private final Iso8583Builder iso8583Builder;
+    private final TransactionRouter transactionRouter;
+
+    public ConnectionHandler(
+            Iso8583Parser iso8583Parser,
+            Iso8583Builder iso8583Builder,
+            TransactionRouter transactionRouter
+    ) {
+        this.iso8583Parser = iso8583Parser;
+        this.iso8583Builder = iso8583Builder;
+        this.transactionRouter = transactionRouter;
+    }
 
     public void handle(Socket socket) {
 
@@ -20,28 +38,54 @@ public class ConnectionHandler {
                             connection.getRemoteAddress()
             );
 
-            String message;
+            String rawMessage;
 
-            while ((message = connection.receive()) != null) {
+            while ((rawMessage = connection.receive()) != null) {
 
                 System.out.println(
-                        "Received from POS: " + message
+                        "Received from POS: " + rawMessage
                 );
 
-                // Temporary response.
-                // Later this will be replaced by:
-                //
-                // ISO8583 Parser
-                //       ↓
-                // Transaction Router
-                //       ↓
-                // ISO8583 Builder
+                try {
+                    byte[] rawBytes =
+                            rawMessage.getBytes(StandardCharsets.UTF_8);
 
-                connection.send(
-                        "HELLO FROM MOCK SWITCH"
-                );
+                    Iso8583Message request =
+                            iso8583Parser.parse(rawBytes);
 
-                System.out.println("message sent!");
+                    System.out.println(
+                            "ISO8583 request parsed. MTI: " +
+                                    request.getMti()
+                    );
+
+                    Iso8583Message response =
+                            transactionRouter.route(request);
+
+                    /*
+                     * 3. Build ISO8583 response
+                     */
+                    byte[] responseBytes =
+                            iso8583Builder.build(response);
+
+                    String responseMessage =
+                            new String(responseBytes, StandardCharsets.UTF_8);
+
+                    connection.send(responseMessage);
+
+                    System.out.println(
+                            "Response sent to POS. MTI: " +
+                                    response.getMti()
+                    );
+
+                }
+                catch (Exception e) {
+                    System.err.println(
+                            "Error processing ISO8583 message: " +
+                                    e.getMessage()
+                    );
+
+                    e.printStackTrace();
+                }
             }
 
         } catch (IOException e) {

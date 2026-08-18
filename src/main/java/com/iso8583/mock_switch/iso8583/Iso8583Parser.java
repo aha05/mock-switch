@@ -1,8 +1,11 @@
 package com.iso8583.mock_switch.iso8583;
 
+import org.springframework.stereotype.Component;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+@Component
 public class Iso8583Parser {
 
     public Iso8583Message parse(byte[] data) {
@@ -43,7 +46,6 @@ public class Iso8583Parser {
         byte[] bitmapBytes;
 
         if (hasSecondaryBitmap) {
-
             byte[] secondaryBitmapBytes =
                     Arrays.copyOfRange(
                             data,
@@ -72,7 +74,6 @@ public class Iso8583Parser {
             );
 
         } else {
-
             bitmapBytes = primaryBitmapBytes;
         }
 
@@ -91,11 +92,8 @@ public class Iso8583Parser {
         // -----------------------------------------
 
         for (int fieldNumber : bitmap.getSetFields()) {
-
             IsoField field;
-
             try {
-
                 field =
                         IsoField.fromNumber(fieldNumber);
 
@@ -139,11 +137,7 @@ public class Iso8583Parser {
         return message;
     }
 
-    private FieldReadResult readField(
-            byte[] data,
-            int position,
-            IsoField field
-    ) {
+    private FieldReadResult readField(byte[] data, int position, IsoField field) {
 
         switch (field.getLengthType()) {
 
@@ -255,11 +249,7 @@ public class Iso8583Parser {
         }
     }
 
-    private int parseLength(
-            String lengthText,
-            IsoField field
-    ) {
-
+    private int parseLength(String lengthText, IsoField field) {
         try {
 
             int length =
@@ -275,7 +265,6 @@ public class Iso8583Parser {
                                 + field.getMaxLength()
                 );
             }
-
             return length;
 
         } catch (NumberFormatException e) {
@@ -290,14 +279,8 @@ public class Iso8583Parser {
         }
     }
 
-    private void ensureAvailable(
-            byte[] data,
-            int position,
-            int required
-    ) {
-
+    private void ensureAvailable(byte[] data, int position, int required) {
         if (position + required > data.length) {
-
             throw new IllegalArgumentException(
                     "Unexpected end of ISO message. "
                             + "Required "
@@ -308,11 +291,7 @@ public class Iso8583Parser {
         }
     }
 
-    private String readAscii(
-            byte[] data,
-            int position,
-            int length
-    ) {
+    private String readAscii(byte[] data, int position, int length) {
 
         return new String(
                 data,
@@ -322,9 +301,5 @@ public class Iso8583Parser {
         );
     }
 
-    private record FieldReadResult(
-            String value,
-            int nextPosition
-    ) {
-    }
+    private record FieldReadResult(String value, int nextPosition) { }
 }

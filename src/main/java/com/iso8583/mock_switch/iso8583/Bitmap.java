@@ -90,7 +90,7 @@ public class Bitmap {
             int byteIndex = zeroBasedField / 8;
             int bitIndex = zeroBasedField % 8; // zeroBasedField/8 = result, zeroBasedField - result * 8 = ?
 
-            result[byteIndex] |= // when positon the bit on specific bytes it shouldn't replace, use bitwise or operator on existing bytes ane new byte
+            result[byteIndex] |= // when positon the bit on specific bytes it shouldn't replace, use bitwise or operator on existing bytes and new byte
                     (byte) (1 << (7 - bitIndex));
         }
 
@@ -169,10 +169,9 @@ public class Bitmap {
         StringBuilder builder = new StringBuilder();
 
         for (byte b : bytes) {
-
             builder.append(
                     String.format("%8s",
-                                    Integer.toBinaryString(b & 0xFF))
+                                    Integer.toBinaryString(b & 0xFF)) // b & 0xFF (11111111) is to convert from signed bytes => unsigned bytes
                             .replace(' ', '0')
             );
         }

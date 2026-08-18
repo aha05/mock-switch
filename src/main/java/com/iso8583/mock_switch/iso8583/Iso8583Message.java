@@ -6,9 +6,9 @@ import java.util.TreeMap;
 
 public class Iso8583Message {
 
-    private String mti;
+    private String mti; // Message Type Indicator: It is the first 4 digits of an ISO 8583 message and tells you what type of message it is.
 
-    private final Map<Integer, String> fields = new TreeMap<>();
+    private final Map<Integer, String> fields = new TreeMap<>(); // TreeMap store data in key value pairs. However, it automatically sorts the keys.
 
     public Iso8583Message() {
     }

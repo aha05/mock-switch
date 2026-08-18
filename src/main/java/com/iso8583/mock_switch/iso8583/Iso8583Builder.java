@@ -1,23 +1,25 @@
 package com.iso8583.mock_switch.iso8583;
 
+import org.springframework.stereotype.Component;
+
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+@Component
 public class Iso8583Builder {
 
     public byte[] build(Iso8583Message message) {
 
         validateMessage(message);
 
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ByteArrayOutputStream output = new ByteArrayOutputStream(); // this is used to collect bytes in memory as you write them. it has flexible size
 
         // MTI
         writeAscii(output, message.getMti());
 
         // Bitmap
-        Bitmap bitmap =
-                Bitmap.fromFields(message.getFields().keySet());
+        Bitmap bitmap = Bitmap.fromFields(message.getFields().keySet());
 
         writeBytes(output, bitmap.toBytes());
 
@@ -37,11 +39,7 @@ public class Iso8583Builder {
         return output.toByteArray();
     }
 
-    private void writeField(
-            ByteArrayOutputStream output,
-            IsoField field,
-            String value
-    ) {
+    private void writeField(ByteArrayOutputStream output, IsoField field, String value) {
 
         validateFieldLength(field, value);
 
@@ -59,7 +57,6 @@ public class Iso8583Builder {
             }
 
             case LLLVAR -> {
-
                 String length =
                         String.format("%03d", value.length());
 
@@ -69,10 +66,7 @@ public class Iso8583Builder {
         }
     }
 
-    private void validateFieldLength(
-            IsoField field,
-            String value
-    ) {
+    private void validateFieldLength(IsoField field, String value) {
 
         int length = value.length();
 
@@ -121,22 +115,14 @@ public class Iso8583Builder {
         }
     }
 
-    private void writeAscii(
-            ByteArrayOutputStream output,
-            String value
-    ) {
-
+    private void writeAscii(ByteArrayOutputStream output, String value) {
         byte[] bytes =
                 value.getBytes(StandardCharsets.US_ASCII);
 
         output.writeBytes(bytes);
     }
 
-    private void writeBytes(
-            ByteArrayOutputStream output,
-            byte[] bytes
-    ) {
-
+    private void writeBytes(ByteArrayOutputStream output, byte[] bytes) {
         output.writeBytes(bytes);
     }
 }
