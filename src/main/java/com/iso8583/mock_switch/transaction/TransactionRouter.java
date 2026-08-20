@@ -8,13 +8,16 @@ public class TransactionRouter {
 
     private final PurchaseHandler purchaseHandler;
     private final ReversalHandler reversalHandler;
+    private final HandleAuthorization handleAuthorization;
 
     public TransactionRouter(
             PurchaseHandler purchaseHandler,
-            ReversalHandler reversalHandler
+            ReversalHandler reversalHandler,
+            HandleAuthorization handleAuthorization
     ) {
         this.purchaseHandler = purchaseHandler;
         this.reversalHandler = reversalHandler;
+        this.handleAuthorization = handleAuthorization;
     }
 
     public Iso8583Message route(Iso8583Message request) {
@@ -28,6 +31,8 @@ public class TransactionRouter {
         }
 
         return switch (mti) {
+
+            case "0010" -> handleAuthorization.handle(request);
 
             case "0200" -> purchaseHandler.handle(request);
 
