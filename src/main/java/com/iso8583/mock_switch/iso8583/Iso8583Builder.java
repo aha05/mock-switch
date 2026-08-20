@@ -19,11 +19,6 @@ public class Iso8583Builder {
         // MTI
         writeAscii(output, message.getMti());
 
-        System.out.println(
-                "data: " +
-                        new String(output.toByteArray(), StandardCharsets.US_ASCII)
-        );
-
         // Bitmap
         Bitmap bitmap = Bitmap.fromFields(message.getFields().keySet());
 

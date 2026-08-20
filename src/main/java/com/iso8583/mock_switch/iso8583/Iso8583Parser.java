@@ -23,14 +23,6 @@ public class Iso8583Parser {
     }
 
     public Iso8583Message parse(byte[] data) {
-
-        System.out.println(
-                "data: " +
-                        new String(data, StandardCharsets.US_ASCII)
-        );
-
-        System.out.println("Data Length: "+data.length);
-
         if (data == null || data.length < 12) {
             throw new IllegalArgumentException(
                     "Invalid ISO 8583 message"
@@ -39,21 +31,12 @@ public class Iso8583Parser {
 
         int position = 0;
 
-        // -----------------------------------------
-        // MTI
-        // -----------------------------------------
-
         String mti =
                 readAscii(data, position, 4);
 
-        System.out.println(mti);
+        System.out.println("Request MTI: "+mti);
 
         position += 4;
-
-        // -----------------------------------------
-        // Primary Bitmap
-        // -----------------------------------------
-
 
 
         byte[] primaryBitmapHex =
@@ -64,8 +47,13 @@ public class Iso8583Parser {
                 );
 
 
-       var hexBytesToString = new String(primaryBitmapHex, StandardCharsets.US_ASCII);
-       byte[] primaryBitmapBytes = hexToBytes(hexBytesToString);
+       var primaryHexBytesToString = new String(primaryBitmapHex, StandardCharsets.US_ASCII);
+       byte[] primaryBitmapBytes = hexToBytes(primaryHexBytesToString);
+
+        System.out.println(
+                "primaryHexBytes: " +
+                        primaryHexBytesToString
+        );
 
                 System.out.println(
                 "RawBytes as bitmap: " +
@@ -73,16 +61,6 @@ public class Iso8583Parser {
         );
 
         position += 16;
-
-        System.out.println(
-                "primaryBitmapHex: " +
-                        new String(primaryBitmapHex, StandardCharsets.US_ASCII)
-        );
-
-        System.out.println(
-                "primaryBitmapBytes: " +
-                        Arrays.toString(primaryBitmapBytes)
-        );
 
         boolean hasSecondaryBitmap =
                 (primaryBitmapBytes[0] & 0x80) != 0;
@@ -95,19 +73,18 @@ public class Iso8583Parser {
             byte[] secondaryBitmapHex =
                     Arrays.copyOfRange(
                             data,
-                            position-16,
-                            position
+                            position,
+                            position+16
                     );
 
             var secondaryHexBytesToString = new String(secondaryBitmapHex, StandardCharsets.US_ASCII);
             byte[] secondaryBitmapBytes = hexToBytes(secondaryHexBytesToString);
 
             System.out.println(
-                    "primaryBitmapBytes: " +
+                    "secondaryHexBytes: " +
                             secondaryHexBytesToString
             );
-
-            System.out.println("current position: " + position);
+            position += 16;
 
             bitmapBytes = new byte[16];
 
@@ -131,28 +108,13 @@ public class Iso8583Parser {
             bitmapBytes = primaryBitmapBytes;
         }
 
-        System.out.println(
-                "data: " +
-                        new String(data, StandardCharsets.US_ASCII)
-        );
-
-
-
         Bitmap bitmap =
                 Bitmap.fromBytes(bitmapBytes);
 
-        System.out.println("Request bitmap: "+bitmap);
-
-        // -----------------------------------------
-        // Create message
-        // -----------------------------------------
+        System.out.println("Request bitmap: " + bitmap);
 
         Iso8583Message message =
                 new Iso8583Message(mti);
-
-        // -----------------------------------------
-        // Read fields
-        // -----------------------------------------
 
         for (int fieldNumber : bitmap.getSetFields()) {
             IsoField field;
@@ -171,7 +133,7 @@ public class Iso8583Parser {
                             field
                     );
 
-            System.out.println(result);
+            System.out.println("DE"+fieldNumber+": " + result.value());
 
             message.setField(
                     fieldNumber,
@@ -181,12 +143,7 @@ public class Iso8583Parser {
             position = result.nextPosition();
         }
 
-        // -----------------------------------------
-        // Make sure nothing unexpected remains
-        // -----------------------------------------
-
         if (position != data.length) {
-
             throw new IllegalArgumentException(
                     "Unexpected data after ISO message. "
                             + "Remaining bytes: "
@@ -198,7 +155,6 @@ public class Iso8583Parser {
     }
 
     private FieldReadResult readField(byte[] data, int position, IsoField field) {
-
         switch (field.getLengthType()) {
 
             case FIXED -> {

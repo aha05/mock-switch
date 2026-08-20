@@ -57,12 +57,6 @@ public class ConnectionHandler {
                     byte[] rawBytes =
                             rawMessage.getBytes(StandardCharsets.UTF_8);
 
-                    System.out.println("RawMessage for byte parsing: "+ rawMessage);
-                    System.out.println(
-                            "RawBytes sent for parsing: " +
-                                    Arrays.toString(rawBytes)
-                    );
-
                     Iso8583Message request =
                             iso8583Parser.parse(rawBytes);
 
@@ -78,11 +72,6 @@ public class ConnectionHandler {
                     /*
                      * 3. Build ISO8583 response
                      */
-
-                    System.out.println(
-                            "data: " +
-                                    new String(iso8583Builder.build(response), StandardCharsets.US_ASCII)
-                    );
 
                     byte[] responseBytes =
                             iso8583Builder.build(response);
