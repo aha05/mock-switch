@@ -26,6 +26,8 @@ public enum IsoField {
 
     RETRIEVAL_REFERENCE_NUMBER(37, "RRN", 12, LengthType.FIXED),
 
+    AUTHORIZATION_CODE(38, "Authorization Code", 6, LengthType.FIXED),
+
     RESPONSE_CODE(39, "Response Code", 2, LengthType.FIXED),
 
     TERMINAL_ID(41, "Terminal ID", 8, LengthType.FIXED),

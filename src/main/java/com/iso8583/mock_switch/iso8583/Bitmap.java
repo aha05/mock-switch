@@ -99,9 +99,11 @@ public class Bitmap {
 
     public static Bitmap fromBytes(byte[] bytes) {
 
+        System.out.println("bytes length: " + bytes.length);
+
         if (bytes == null || (bytes.length != 8 && bytes.length != 16)) {
             throw new IllegalArgumentException(
-                    "Bitmap must contain either 8 or 16 bytes"
+                    "Bitmap must contain either 16 or 32 bytes"
             );
         }
 

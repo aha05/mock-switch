@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Map;
 
 @Component
@@ -18,8 +19,17 @@ public class Iso8583Builder {
         // MTI
         writeAscii(output, message.getMti());
 
+        System.out.println(
+                "data: " +
+                        new String(output.toByteArray(), StandardCharsets.US_ASCII)
+        );
+
         // Bitmap
         Bitmap bitmap = Bitmap.fromFields(message.getFields().keySet());
+
+        System.out.println(
+                "response bitmap: " + bitmap
+        );
 
         writeBytes(output, bitmap.toBytes());
 

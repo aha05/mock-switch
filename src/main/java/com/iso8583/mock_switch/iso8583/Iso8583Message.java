@@ -25,7 +25,7 @@ public class Iso8583Message {
 
         if (mti == null || !mti.matches("\\d{4}")) {
             throw new IllegalArgumentException(
-                    "MTI must be exactly 4 numeric characters"
+                    "MTI must be exactly 4 numeric characters"+mti
             );
         }
 

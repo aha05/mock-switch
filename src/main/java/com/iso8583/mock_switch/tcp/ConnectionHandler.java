@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class ConnectionHandler {
@@ -38,9 +41,13 @@ public class ConnectionHandler {
                             connection.getRemoteAddress()
             );
 
+            List<String> messages = new ArrayList<>();
+
             String rawMessage;
 
             while ((rawMessage = connection.receive()) != null) {
+
+                messages.add(rawMessage);
 
                 System.out.println(
                         "Received from POS: " + rawMessage
@@ -50,12 +57,19 @@ public class ConnectionHandler {
                     byte[] rawBytes =
                             rawMessage.getBytes(StandardCharsets.UTF_8);
 
+                    System.out.println("RawMessage for byte parsing: "+ rawMessage);
+                    System.out.println(
+                            "RawBytes sent for parsing: " +
+                                    Arrays.toString(rawBytes)
+                    );
+
                     Iso8583Message request =
                             iso8583Parser.parse(rawBytes);
 
                     System.out.println(
                             "ISO8583 request parsed. MTI: " +
-                                    request.getMti()
+                                    request.getMti() + "\nISO 8583 fields: " +
+                                    request.getFields()
                     );
 
                     Iso8583Message response =
@@ -64,8 +78,17 @@ public class ConnectionHandler {
                     /*
                      * 3. Build ISO8583 response
                      */
+
+                    System.out.println(
+                            "data: " +
+                                    new String(iso8583Builder.build(response), StandardCharsets.US_ASCII)
+                    );
+
                     byte[] responseBytes =
                             iso8583Builder.build(response);
+
+                    System.out.println("Response Bytes: " +
+                            new String(responseBytes, StandardCharsets.UTF_8));
 
                     String responseMessage =
                             new String(responseBytes, StandardCharsets.UTF_8);

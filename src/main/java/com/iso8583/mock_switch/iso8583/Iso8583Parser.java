@@ -8,7 +8,28 @@ import java.util.Arrays;
 @Component
 public class Iso8583Parser {
 
+    public static byte[] hexToBytes(String hex) {
+        int len = hex.length();
+        byte[] bytes = new byte[len / 2];
+
+        for (int i = 0; i < len; i += 2) {
+            bytes[i / 2] = (byte) Integer.parseInt(
+                    hex.substring(i, i + 2),
+                    16
+            );
+        }
+
+        return bytes;
+    }
+
     public Iso8583Message parse(byte[] data) {
+
+        System.out.println(
+                "data: " +
+                        new String(data, StandardCharsets.US_ASCII)
+        );
+
+        System.out.println("Data Length: "+data.length);
 
         if (data == null || data.length < 12) {
             throw new IllegalArgumentException(
@@ -25,35 +46,68 @@ public class Iso8583Parser {
         String mti =
                 readAscii(data, position, 4);
 
+        System.out.println(mti);
+
         position += 4;
 
         // -----------------------------------------
         // Primary Bitmap
         // -----------------------------------------
 
-        byte[] primaryBitmapBytes =
+
+
+        byte[] primaryBitmapHex =
                 Arrays.copyOfRange(
                         data,
                         position,
-                        position + 8
+                        position + 16
                 );
 
-        position += 8;
+
+       var hexBytesToString = new String(primaryBitmapHex, StandardCharsets.US_ASCII);
+       byte[] primaryBitmapBytes = hexToBytes(hexBytesToString);
+
+                System.out.println(
+                "RawBytes as bitmap: " +
+                        Arrays.toString(primaryBitmapHex)
+        );
+
+        position += 16;
+
+        System.out.println(
+                "primaryBitmapHex: " +
+                        new String(primaryBitmapHex, StandardCharsets.US_ASCII)
+        );
+
+        System.out.println(
+                "primaryBitmapBytes: " +
+                        Arrays.toString(primaryBitmapBytes)
+        );
 
         boolean hasSecondaryBitmap =
                 (primaryBitmapBytes[0] & 0x80) != 0;
 
+        System.out.println("has secondary: " + hasSecondaryBitmap);
+
         byte[] bitmapBytes;
 
         if (hasSecondaryBitmap) {
-            byte[] secondaryBitmapBytes =
+            byte[] secondaryBitmapHex =
                     Arrays.copyOfRange(
                             data,
-                            position,
-                            position + 8
+                            position-16,
+                            position
                     );
 
-            position += 8;
+            var secondaryHexBytesToString = new String(secondaryBitmapHex, StandardCharsets.US_ASCII);
+            byte[] secondaryBitmapBytes = hexToBytes(secondaryHexBytesToString);
+
+            System.out.println(
+                    "primaryBitmapBytes: " +
+                            secondaryHexBytesToString
+            );
+
+            System.out.println("current position: " + position);
 
             bitmapBytes = new byte[16];
 
@@ -77,8 +131,17 @@ public class Iso8583Parser {
             bitmapBytes = primaryBitmapBytes;
         }
 
+        System.out.println(
+                "data: " +
+                        new String(data, StandardCharsets.US_ASCII)
+        );
+
+
+
         Bitmap bitmap =
                 Bitmap.fromBytes(bitmapBytes);
+
+        System.out.println("Request bitmap: "+bitmap);
 
         // -----------------------------------------
         // Create message
@@ -94,15 +157,10 @@ public class Iso8583Parser {
         for (int fieldNumber : bitmap.getSetFields()) {
             IsoField field;
             try {
-                field =
-                        IsoField.fromNumber(fieldNumber);
-
+                field = IsoField.fromNumber(fieldNumber);
             } catch (IllegalArgumentException e) {
-
                 throw new IllegalArgumentException(
-                        "Unsupported ISO field DE"
-                                + fieldNumber,
-                        e
+                        "Unsupported ISO field DE" + fieldNumber, e
                 );
             }
 
@@ -112,6 +170,8 @@ public class Iso8583Parser {
                             position,
                             field
                     );
+
+            System.out.println(result);
 
             message.setField(
                     fieldNumber,
