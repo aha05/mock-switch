@@ -76,17 +76,17 @@ public class ConnectionHandler {
                     byte[] responseBytes =
                             iso8583Builder.build(response);
 
-                    System.out.println("Response Bytes: " +
-                            new String(responseBytes, StandardCharsets.UTF_8));
+                    String responseMessage = new String(responseBytes, StandardCharsets.UTF_8);
 
-                    String responseMessage =
-                            new String(responseBytes, StandardCharsets.UTF_8);
+                    System.out.println("Response Bytes: " +
+                                 responseMessage);
 
                     connection.send(responseMessage);
 
                     System.out.println(
-                            "Response sent to POS. MTI: " +
-                                    response.getMti()
+                            "ISO8583 response parsed. MTI: " +
+                                    response.getMti() + "\nISO 8583 fields: " +
+                                    response.getFields()
                     );
 
                 }

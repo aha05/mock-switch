@@ -32,7 +32,7 @@ public class TransactionRouter {
 
         return switch (mti) {
 
-            case "0010" -> handleAuthorization.handle(request);
+            case "0100" -> handleAuthorization.handle(request);
 
             case "0200" -> purchaseHandler.handle(request);
 
