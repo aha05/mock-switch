@@ -1,7 +1,23 @@
 spring:
   application:
     name: mock-switch
+  datasource:
+    url: jdbc:h2:mem:demo
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
 
 mock-switch:
   tcp:
     port: 8583
+
+api:
+  baseUrl: http://localhost:8082
+  paymentApi: /payment

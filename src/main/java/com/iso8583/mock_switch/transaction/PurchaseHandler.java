@@ -1,10 +1,18 @@
 package com.iso8583.mock_switch.transaction;
 
+import com.iso8583.mock_switch.client.HttpClient;
 import com.iso8583.mock_switch.iso8583.Iso8583Message;
+import com.iso8583.mock_switch.transaction.mapper.Iso8583MessageMapper;
+import com.iso8583.mock_switch.transaction.repository.TransactionJournalRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor
 @Component
 public class PurchaseHandler {
+    private final HttpClient httpClient;
+    private final Iso8583MessageMapper iso8583MessageMapper;
+    private final TransactionJournalRepository transactionJournalRepository;
 
     public Iso8583Message handle(Iso8583Message request) {
 
@@ -12,14 +20,11 @@ public class PurchaseHandler {
 
         Iso8583Message response = new Iso8583Message();
 
-        /*
-         * 0200 → 0210
-         */
+        // 0200 → 0210
+
         response.setMti("0210");
 
-        /*
-         * Copy fields from request
-         */
+        //Copy fields from request
         copyField(request, response, 3);   // Processing Code
         copyField(request, response, 4);   // Amount
         copyField(request, response, 7);   // Transmission Date/Time
@@ -33,17 +38,18 @@ public class PurchaseHandler {
         copyField(request, response, 41);  // Terminal ID
         copyField(request, response, 42);  // Merchant ID
 
-        /*
-         * Mock authorization.
-         *
-         * 00 = Approved
-         */
         response.setField(39, "00");
 
-        /*
-         * Mock authorization code
-         */
         response.setField(38, "123456");
+
+
+        // record in db
+        var transactionJournal = iso8583MessageMapper.toEntity(response);
+        transactionJournalRepository.save(transactionJournal);
+
+        // update third party
+        var jsonRequest = iso8583MessageMapper.toJson(response);
+        httpClient.postPayment(jsonRequest);
 
         return response;
     }
