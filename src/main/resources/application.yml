@@ -2,7 +2,7 @@ spring:
   application:
     name: mock-switch
   datasource:
-    url: jdbc:h2:mem:demo
+    url: jdbc:h2:mem:mock-switch
     driverClassName: org.h2.Driver
     username: sa
     password:

@@ -1,7 +1,9 @@
 package com.iso8583.mock_switch.transaction;
 
 import com.iso8583.mock_switch.client.HttpClient;
+import com.iso8583.mock_switch.exception.DuplicateTransactionException;
 import com.iso8583.mock_switch.iso8583.Iso8583Message;
+import com.iso8583.mock_switch.iso8583.IsoField;
 import com.iso8583.mock_switch.transaction.mapper.Iso8583MessageMapper;
 import com.iso8583.mock_switch.transaction.repository.TransactionJournalRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,14 @@ public class PurchaseHandler {
 
 
         // record in db
+
+
+        if(transactionJournalRepository
+                .existsByRetrievalReferenceNumber(
+                        response.getField(IsoField.RETRIEVAL_REFERENCE_NUMBER))){
+            throw new DuplicateTransactionException("Transaction already exist: "+
+                    response.getField(IsoField.RETRIEVAL_REFERENCE_NUMBER));
+        }
         var transactionJournal = iso8583MessageMapper.toEntity(response);
         transactionJournalRepository.save(transactionJournal);
 
